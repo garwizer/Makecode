@@ -1,0 +1,154 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MakeCode Studio v0.4 | HTML → JavaScript / C++ / C#</title><style>
+:root{color-scheme:dark;--bg:#0a0e19;--panel:#121a2b;--panel2:#192338;--edge:#2e3c55;--txt:#eaf1ff;--sub:#a1adc2;--accent:#72a7ff;--good:#5ed4a8}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0,#182745 0,transparent 35%),var(--bg);color:var(--txt);font:15px/1.6 system-ui,-apple-system,'Segoe UI',sans-serif}header{padding:25px 28px;border-bottom:1px solid var(--edge);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}h1{margin:0;font-size:25px;letter-spacing:-.6px}small,.muted{color:var(--sub)}.brand{color:var(--accent)}main{max-width:1240px;margin:auto;padding:24px;display:grid;grid-template-columns:minmax(320px,450px) minmax(0,1fr);gap:20px}.card{background:var(--panel);border:1px solid var(--edge);border-radius:17px;padding:20px;min-width:0}.card h2{font-size:17px;margin:0 0 14px}.stack{display:grid;gap:18px}.drop{border:2px dashed #57719e;border-radius:14px;background:#0d1728;text-align:center;padding:25px 12px;cursor:pointer;display:block}.drop:hover,.drop.over{background:#182b48;border-color:#91bdff}.drop strong{display:block;font-size:18px}input[type=file]{display:none}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}button,.btn{border:1px solid #42608b;border-radius:10px;padding:11px 13px;font:inherit;color:var(--txt);background:#1d304d;cursor:pointer;text-align:center;display:inline-block}button:hover,.btn:hover{background:#284267}button.primary{background:#2969db;border-color:#4e8bf4;font-weight:700}button.primary:hover{background:#397bf0}button:disabled{opacity:.4;cursor:not-allowed}.languages{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.languages input{position:absolute;opacity:0}.languages label{cursor:pointer;padding:13px 7px;text-align:center;border:1px solid var(--edge);background:#0f1727;border-radius:10px;display:block;font-weight:700}.languages input:checked+label{background:#20447f;border-color:#83b2ff;box-shadow:0 0 0 1px #83b2ff}.languages input:focus-visible+label{outline:2px solid white}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.tag{color:var(--good);background:#10362e;border-radius:50px;padding:3px 10px;font-size:12px}.info{border-radius:11px;background:#10223a;border:1px solid #294364;padding:13px;color:#bdcbe1;font-size:13px}.alert{background:#362c1b;border-color:#65522c}.warn{font-size:13px;color:#d8bf8e}.status{min-height:25px;color:var(--good)}.status.error{color:#ffa5a5}code,pre{font:12px/1.55 ui-monospace,Consolas,monospace}.preview{height:340px;border:1px solid var(--edge);border-radius:12px;overflow:hidden;background:white}.preview iframe{width:100%;height:100%;border:0;background:#fff}.topline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;flex-wrap:wrap}.filename{font:12px ui-monospace,Consolas,monospace;color:#9fc2ff}.codebox{margin:0;background:#080d16;border-radius:10px;border:1px solid #233149;padding:14px;max-height:300px;min-height:150px;overflow:auto;white-space:pre;tab-size:2}.footer{padding:8px 24px 27px;text-align:center;color:var(--sub);font-size:12px}details{font-size:13px;color:var(--sub)}summary{cursor:pointer;color:var(--txt)}@media(max-width:860px){main{grid-template-columns:1fr}header{padding:18px}main{padding:14px}}@media(max-width:400px){.two{grid-template-columns:1fr}.card{padding:15px}}
+
+.editor{width:100%;min-height:380px;resize:vertical;background:#080d16;color:#eaf1ff;border:1px solid #44648c;border-radius:10px;padding:14px;font:13px/1.6 Consolas,'Courier New',monospace;tab-size:2;white-space:pre;overflow:auto;outline-offset:2px}
+.editor:focus{outline:2px solid #72a7ff}.editor:disabled{opacity:.65}.edit-status{font-size:12px;color:#a1adc2;margin:8px 0}.change-note{color:#ffda88}
+</style></head><body><header><div><h1><span class="brand">Make</span>Code Studio <small>v0.4</small></h1><div class="muted">HTMLを解析してJavaScriptで再構築 / C++・C#向けアプリも生成</div></div><span class="tag">ブラウザー内で処理・アップロード不要</span></header><main><section class="stack"><div class="card"><h2>01　サイトを読み込む</h2><label class="drop" id="drop">📁<strong>HTMLファイルを選択 / ドロップ</strong><span class="muted">index.html などを読み込む</span><input id="htmlPick" type="file" accept=".html,.htm,text/html"></label><div class="two" style="margin-top:11px"><label class="btn" for="folderPick">📂 サイトのフォルダーを選択</label><button id="sample" type="button">🎮 スキー質問サンプル</button></div><input id="folderPick" type="file" webkitdirectory directory multiple><p class="muted" id="fileInfo" style="margin-bottom:0">まだファイルがありません。</p><div class="info" style="margin-top:14px">複数のCSS・画像・JSを使ったサイトは、<b>フォルダーごと選択</b>してね。<code>index.html</code> と同じフォルダーにある素材もZIPへ入るよ。</div></div><div class="card"><h2>02　変換先の言語</h2><div class="languages"><div><input id="lang-js" type="radio" name="lang" value="js" checked><label for="lang-js">🟨<br>JavaScript</label></div><div><input id="lang-cpp" type="radio" name="lang" value="cpp"><label for="lang-cpp">🔵<br>C++</label></div><div><input id="lang-cs" type="radio" name="lang" value="cs"><label for="lang-cs">🟣<br>C#</label></div></div><p id="targetHelp" class="muted">HTMLをDOM要素・CSS・イベント付きのJavaScriptに組み替える。iframe不使用。GitHub Pages対応。</p><button class="primary" id="generate" style="width:100%" disabled>⚙️ プログラムに変換する</button><div class="status" id="status" role="status" aria-live="polite"></div></div><div class="card"><h2>💡 変換の仕組み</h2><div class="info"><b>JavaScript版</b>はHTMLを解析し、要素・属性・CSS・テキストをJavaScriptのDOM操作で再構築します（iframe不使用）。元のJavaScriptも実行する構成です。<b>C++ / C#版</b>は引き続きWebView方式で、完全なネイティブコード変換ではありません。</div><p class="warn">C++版は <b>Qt 6 WebEngine</b>、C#版は <b>Windows WebView2</b> が必要です。GitHub Pagesにそのまま公開できるのはJavaScript版です。</p><details><summary>変換できない・注意が必要なもの</summary><p>サーバー側のPHP/Node.js、データベース、別サイトのアクセス制限、許可が必要なマイク・カメラ、絶対パスの画像などは自動では移植できません。特殊なdocument.write、DOMContentLoaded前提の処理、厳密なscript実行順、Web Components、複雑なモジュール構成では差異が出ます。HTMLをC++/C#の命令に直接変換することはできません。</p></details></div></section><section class="stack"><div class="card"><div class="topline"><h2 style="margin:0">👁️ HTMLプレビュー</h2><span id="previewName" class="filename">no file</span></div><div class="preview"><iframe id="preview" title="読み込んだサイトのプレビュー" sandbox="allow-scripts allow-forms allow-modals" referrerpolicy="no-referrer"></iframe></div><p class="muted" style="font-size:12px;margin-bottom:0">プレビューは安全のため独立したフレームで実行されます。フォルダー内の相対パス素材はプレビューでは表示できないことがありますが、生成したZIPには含まれます。</p></div><div class="card"><div class="topline"><h2 style="margin:0">💻 変換されたプログラム</h2><span id="codeName" class="filename">変換前</span></div><div class="info" style="margin-bottom:10px">✏️ 生成後のコードをここで直接編集できます。編集内容を反映してからプレビュー・ZIP保存ができます。JavaScript版は実行確認にも対応！</div><textarea id="codeEditor" class="editor" aria-label="変換されたプログラムの編集欄" spellcheck="false" disabled placeholder="プログラムを生成するとここに表示されます。"></textarea><div class="edit-status" id="editStatus">まだプログラムはありません。</div><div class="row" style="margin:12px 0"><button id="applyEdit" disabled>✅ 編集内容を反映</button><button id="runEdited" disabled>▶ 編集したサイトをプレビュー</button><button id="restoreEdit" disabled>↩ 生成直後に戻す</button></div><div class="preview" style="height:285px;margin-bottom:12px"><iframe id="editedPreview" title="編集したJavaScriptの実行プレビュー" sandbox="allow-scripts allow-forms allow-modals" referrerpolicy="no-referrer"></iframe></div><div class="row" style="margin-top:14px"><button id="downloadZip" class="primary" disabled>⬇️ プロジェクトZIPを保存</button><button id="downloadCode" disabled>📄 コード単体を保存</button><button id="copy" disabled>📋 コードをコピー</button></div><div class="info" id="packageHelp" style="margin-top:13px">変換すると、必要なプログラムとサイトデータをまとめたZIPがダウンロードできるよ。</div></div></section></main><div class="footer">MakeCode Studio — ローカル変換ツール / v0.4</div><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), enc=new TextEncoder();
+let siteFiles=[], htmlText='', codeText='', originalCode='', codeFile='', packaged=[], zipName='MakeCode-project.zip', baseName='site', previewBlobUrl=null;
+const targetNames={js:'JavaScript',cpp:'C++',cs:'C#'};
+const helptxt={js:'HTML要素を解析しDOMを構築するJavaScriptを生成。iframe不使用。GitHub Pages対応。',cpp:'Qt 6 WebEngineでHTMLサイトを表示するC++デスクトップアプリ。Qtのインストールが必要。',cs:'WindowsのWebView2でHTMLサイトを表示するC#デスクトップアプリ。.NETとWebView2が必要。'};
+const normalize=p=>p.replace(/\\/g,'/').replace(/^\/+/, '').split('/').filter(x=>x&&x!=='.'&&x!=='..').join('/');
+function setStatus(s,error=false){$('status').textContent=s;$('status').classList.toggle('error',error)}
+function selection(){return document.querySelector('input[name="lang"]:checked').value}
+function cleanName(s){return (s||'project').replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,45)||'project'}
+function clearEditedPreview(){if(previewBlobUrl){URL.revokeObjectURL(previewBlobUrl);previewBlobUrl=null}$('editedPreview').srcdoc='<html><meta charset="utf-8"><body style="font:15px system-ui;color:#64748b;text-align:center;padding:35px 10px">JavaScriptを生成してから「編集したサイトをプレビュー」を押してね。</body></html>'}
+function resetGenerated(){codeText='';originalCode='';packaged=[];$('codeEditor').value='';$('codeEditor').disabled=true;$('editStatus').textContent='まだプログラムはありません。';$('codeName').textContent='変換前';$('downloadZip').disabled=$('downloadCode').disabled=$('copy').disabled=true;$('applyEdit').disabled=$('restoreEdit').disabled=$('runEdited').disabled=true;clearEditedPreview();setStatus('')}
+function applyCodeEdits(showMessage=true){
+ if(!packaged.length)return false;
+ const revised=$('codeEditor').value;
+ if(!revised.trim()){setStatus('プログラムが空です。編集内容を確認してください。',true);return false}
+ // Syntax validation can catch common editing mistakes without blocking C++ / C# edits.
+ if(codeFile==='app.js'){try{new Function(revised)}catch(error){setStatus('JavaScript構文エラー: '+error.message,true);return false}}
+ codeText=revised;
+ const item=packaged.find(f=>f.name===codeFile);
+ if(item)item.bytes=enc.encode(revised);
+ $('editStatus').textContent='✅ 編集内容を反映済み（'+revised.length.toLocaleString()+'文字）';
+ $('editStatus').classList.remove('change-note');
+ if(showMessage)setStatus('編集内容を反映しました。保存するZIPにも反映されます。');
+ return true
+}
+function previewEdited(){
+ if(codeFile!=='app.js'){setStatus('プレビューはJavaScript版に対応しています。C++・C#は各開発環境で実行してください。',true);return}
+ if(!applyCodeEdits(false))return;
+ clearEditedPreview();
+ previewBlobUrl=URL.createObjectURL(new Blob([codeText],{type:'text/javascript'}));
+ // srcdoc creates a fresh browsing context; scripts execute in a sandboxed iframe.
+ const safeUrl=previewBlobUrl.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+ $('editedPreview').srcdoc='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><script src="'+safeUrl+'"><\/script></body></html>'.replace('<\/script>','</scr'+'ipt>');
+ setStatus('編集版を再読み込みしました。画像・外部CSSなどの相対パスはZIPで公開して確認してください。');
+}
+$('codeEditor').addEventListener('input',()=>{if(!packaged.length)return;$('editStatus').textContent='● 未反映の変更があります（保存前に「編集内容を反映」）';$('editStatus').classList.add('change-note')});
+$('applyEdit').addEventListener('click',()=>applyCodeEdits());
+$('runEdited').addEventListener('click',previewEdited);
+$('restoreEdit').addEventListener('click',()=>{if(!originalCode)return;if($('codeEditor').value!==originalCode&&!confirm('編集を破棄して生成直後のコードに戻しますか？'))return;$('codeEditor').value=originalCode;applyCodeEdits();setStatus('生成直後のコードに戻しました。')});
+async function filesLoaded(entries){try{if(!entries.length)return;const items=[];for(const e of entries){const name=normalize(e.name);if(!name||e.file.size>60*1024*1024)throw Error('60MBを超えるファイルは追加できません。');items.push({name,bytes:new Uint8Array(await e.file.arrayBuffer())})}const htmls=items.filter(x=>/\.html?$/i.test(x.name));if(!htmls.length)throw Error('HTMLファイル（.html / .htm）がありません。');let chosen=htmls.find(x=>/(^|\/)index\.html?$/i.test(x.name))||htmls[0];const root=chosen.name.includes('/')?chosen.name.slice(0,chosen.name.lastIndexOf('/')+1):'';siteFiles=items.filter(x=>!root||x.name.startsWith(root)).map(x=>({name:x.name.slice(root.length),bytes:x.bytes})).filter(x=>x.name);const htmlOriginal=chosen.name.slice(root.length);if(htmlOriginal!=='index.html'){const existing=siteFiles.find(x=>x.name==='index.html');if(existing&&existing!==chosen)throw Error('index.html が重複しています。');siteFiles=siteFiles.map(x=>x.name===htmlOriginal?{...x,name:'index.html'}:x)}htmlText=new TextDecoder('utf-8').decode(chosen.bytes);baseName=cleanName(htmlOriginal);$('fileInfo').textContent=`✅ ${siteFiles.length}ファイル / ${htmlOriginal} / ${Math.round(siteFiles.reduce((a,x)=>a+x.bytes.length,0)/1024)} KB`;$('previewName').textContent=htmlOriginal;$('generate').disabled=false;$('preview').srcdoc=htmlText;resetGenerated();setStatus('読み込み完了。言語を選んで変換できます。')}catch(err){setStatus('読み込みエラー: '+err.message,true)}}
+$('htmlPick').addEventListener('change',e=>{const f=e.target.files[0];if(f)filesLoaded([{name:f.name,file:f}]);e.target.value=''});
+$('folderPick').addEventListener('change',e=>{const ff=[...e.target.files];if(ff.length)filesLoaded(ff.map(f=>({name:f.webkitRelativePath||f.name,file:f})));e.target.value=''});
+const drop=$('drop');drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over')});drop.addEventListener('dragleave',()=>drop.classList.remove('over'));drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');const f=[...e.dataTransfer.files].find(f=>/\.html?$/i.test(f.name));if(f)filesLoaded([{name:f.name,file:f}]);else setStatus('HTMLファイルをドロップしてください。',true)});
+document.querySelectorAll('input[name="lang"]').forEach(x=>x.addEventListener('change',()=>{$('targetHelp').textContent=helptxt[selection()];resetGenerated()}));
+$('sample').addEventListener('click',()=>{const str="<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Can you ski? | MakeCode Demo</title>\n<style>\n  :root { color-scheme: dark; }\n  * { box-sizing: border-box; }\n  body { margin: 0; min-height: 100vh; font-family: Arial, \"Segoe UI\", sans-serif; background: #132442; color: #fff; }\n  .stage { position: relative; width: 100%; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 22px; text-align: center; }\n  .question { position: absolute; top: 21%; left: 15px; right: 15px; margin: 0; font-size: clamp(27px, 4vw, 42px); font-weight: 700; }\n  .answers { width: min(1050px, 100%); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 5vw, 65px); margin-top: 38vh; }\n  .answers button, #again { color: #fff; background: #2877d8; border: none; border-radius: 8px; padding: 18px 14px; cursor: pointer; font-size: clamp(16px, 2vw, 21px); min-height: 59px; transition: background .15s, transform .15s; }\n  .answers button:hover, #again:hover { background: #3b8dec; transform: translateY(-2px); }\n  button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }\n  .result { display: none; min-height: 100vh; align-items: center; justify-content: center; flex-direction: column; gap: 27px; text-align: center; padding: 30px; }\n  .result h1 { font-size: clamp(30px, 4vw, 43px); margin: 0; }\n  #again { font-size: 15px; padding: 12px 24px; min-height: 45px; }\n  @media (max-width: 540px) { .question { top: 18%; } .answers { margin-top: 30vh; grid-template-columns: 1fr; gap: 13px; max-width: 330px; } .answers button { padding: 15px; } }\n</style>\n</head>\n<body>\n<main class=\"stage\" id=\"questionScreen\">\n  <h1 class=\"question\">Can you ski?</h1>\n  <div class=\"answers\">\n    <button type=\"button\" data-answer=\"Me too\">Yes I can</button>\n    <button type=\"button\" data-answer=\"I can ski\">I don't know</button>\n    <button type=\"button\" data-answer=\"I can ski\">No I can't</button>\n  </div>\n</main>\n<section class=\"result\" id=\"resultScreen\" aria-live=\"polite\">\n  <h1 id=\"resultText\"></h1>\n  <button type=\"button\" id=\"again\">↩ Back</button>\n</section>\n<script>\n  const questionScreen = document.getElementById('questionScreen');\n  const resultScreen = document.getElementById('resultScreen');\n  const resultText = document.getElementById('resultText');\n  document.querySelectorAll('[data-answer]').forEach(button => {\n    button.addEventListener('click', () => {\n      resultText.textContent = button.dataset.answer;\n      questionScreen.style.display = 'none';\n      resultScreen.style.display = 'flex';\n    });\n  });\n  document.getElementById('again').addEventListener('click', () => {\n    resultScreen.style.display = 'none';\n    questionScreen.style.display = 'flex';\n  });\n<\/script>\n</body>\n</html>\n";filesLoaded([{name:'index.html',file:new File([str],'index.html',{type:'text/html'})}])});
+function astNode(node){
+  // HTMLを解析し、ブラウザーDOMを再構築するためのツリーにする。
+  if(node.nodeType===3)return ['t',node.nodeValue];
+  if(node.nodeType===8)return ['c',node.nodeValue];
+  if(node.nodeType!==1)return null;
+  const tag=node.localName, attrs=[...node.attributes].map(a=>[a.name,a.value]);
+  // scriptは通常のDOMノードでは挿入しても実行されないため実行段階で扱う。
+  if(tag==='script')return ['s',attrs,node.textContent||''];
+  const children=[...node.childNodes].map(astNode).filter(Boolean);
+  return ['e',tag,attrs,children,node.namespaceURI==='http://www.w3.org/2000/svg'?'svg':node.namespaceURI==='http://www.w3.org/1998/Math/MathML'?'math':'html'];
+}
+function jsProject(){
+  const parsed=new DOMParser().parseFromString(htmlText,'text/html');
+  const tree={htmlAttrs:[...parsed.documentElement.attributes].map(a=>[a.name,a.value]),head:[...parsed.head.childNodes].map(astNode).filter(Boolean),bodyAttrs:[...parsed.body.attributes].map(a=>[a.name,a.value]),body:[...parsed.body.childNodes].map(astNode).filter(Boolean)};
+  // JSONはJSモジュール内へ埋め込む。コード表示で全DOM構造が確認できる。
+  const data=JSON.stringify(tree,null,2).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+  const js=`// MakeCode Studio v0.4 / HTML → JavaScript DOM reconstruction
+// Original HTML is parsed into element, attribute, text and style nodes.
+// Unlike v0.1, this does NOT display site/index.html in an iframe.
+// Some advanced scripts (document.write, parser-time assumptions) need manual fixes.
+'use strict';
+const siteTree = ${data};
+
+const NS = {svg:'http://www.w3.org/2000/svg',math:'http://www.w3.org/1998/Math/MathML'};
+const scriptQueue=[];
+function applyAttributes(el, attributes){
+  for(const [name,value] of attributes){
+    try{el.setAttribute(name,value)}catch(error){console.warn('Attribute skipped',name,error)}
+  }
+}
+function rebuildNode(spec){
+  if(spec[0]==='t')return document.createTextNode(spec[1]);
+  if(spec[0]==='c')return document.createComment(spec[1]);
+  if(spec[0]==='s'){
+    const slot=document.createComment('script position');
+    scriptQueue.push({slot,attributes:spec[1],content:spec[2]});
+    return slot;
+  }
+  const [,tag,attributes,children,ns]=spec;
+  const el=NS[ns]?document.createElementNS(NS[ns],tag):document.createElement(tag);
+  applyAttributes(el,attributes);
+  for(const child of children)el.appendChild(rebuildNode(child));
+  return el;
+}
+function constructSite(){
+  applyAttributes(document.documentElement,siteTree.htmlAttrs);
+  applyAttributes(document.body,siteTree.bodyAttrs);
+  for(const node of siteTree.head)document.head.appendChild(rebuildNode(node));
+  for(const node of siteTree.body)document.body.appendChild(rebuildNode(node));
+}
+async function executeScripts(){
+  // Scripts originally in the HTML are loaded in document order.
+  for(const job of scriptQueue){
+    const el=document.createElement('script');
+    applyAttributes(el,job.attributes);
+    const typ=(el.getAttribute('type')||'').trim().toLowerCase();
+    const executable=!typ||typ==='module'||typ==='text/javascript'||typ==='application/javascript';
+    if(!executable){el.textContent=job.content;job.slot.replaceWith(el);continue}
+    const src=el.getAttribute('src');
+    if(!src)el.textContent=job.content;
+    if(src){
+      // Explicitly wait so classic external scripts execute in predictable order.
+      el.async=false;
+      const done=new Promise(resolve=>{el.addEventListener('load',resolve,{once:true});el.addEventListener('error',()=>{console.warn('Script load failed:',src);resolve()},{once:true})});
+      job.slot.replaceWith(el);
+      await done;
+    }else{
+      job.slot.replaceWith(el);
+      if(typ==='module')await Promise.resolve();
+    }
+  }
+}
+constructSite();
+executeScripts().catch(console.error);
+`;
+  const index=`<!doctype html>\n<html lang="ja">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<script src="./app.js" defer><\/script>\n</head>\n<body></body>\n</html>\n`;
+  const info='MakeCode Studio v0.4 JavaScript DOM reconstruction.\\n'+
+    'Upload index.html, app.js and any asset files together to GitHub Pages.\\n'+
+    'The original HTML nodes, styles, text, events and inline scripts are reconstructed by JavaScript.\\n'+
+    'This is not byte-for-byte guaranteed. Check special script behavior, external dependencies, and asset paths.\\n'+
+    'Original file is included as original-source.html for reference.\\n';
+  const extras=[['index.html',index],['app.js',js],['original-source.html',htmlText],['README.txt',info]];
+  const assets=siteFiles.filter(f=>f.name!=='index.html');
+  return {code:js,filename:'app.js',extra:extras,assets};
+}
+function cppProject(){const code=`// MakeCode Studio v0.4 / Qt 6 WebEngine wrapper\n// Requires Qt 6 Widgets + WebEngineWidgets\n#include <QApplication>\n#include <QWebEngineView>\n#include <QDir>\n#include <QUrl>\n\nint main(int argc, char *argv[]) {\n    QApplication app(argc, argv);\n    QWebEngineView view;\n    const QString path = QDir(QCoreApplication::applicationDirPath())\n        .absoluteFilePath(QStringLiteral("site/index.html"));\n    view.load(QUrl::fromLocalFile(path));\n    view.setWindowTitle(QStringLiteral("MakeCode App"));\n    view.resize(1280, 800);\n    view.show();\n    return app.exec();\n}\n`;
+const cmake=`cmake_minimum_required(VERSION 3.21)\nproject(MakeCodeApp LANGUAGES CXX)\nset(CMAKE_CXX_STANDARD 17)\nset(CMAKE_AUTOMOC ON)\nfind_package(Qt6 REQUIRED COMPONENTS Widgets WebEngineWidgets)\nadd_executable(MakeCodeApp main.cpp)\ntarget_link_libraries(MakeCodeApp PRIVATE Qt6::Widgets Qt6::WebEngineWidgets)\n# Copies the site's HTML/assets next to the built executable.\nadd_custom_command(TARGET MakeCodeApp POST_BUILD\n  COMMAND \${CMAKE_COMMAND} -E copy_directory\n  "\${CMAKE_CURRENT_SOURCE_DIR}/site"\n  "$<TARGET_FILE_DIR:MakeCodeApp>/site"\n)\n`;
+return {code,filename:'main.cpp',extra:[['main.cpp',code],['CMakeLists.txt',cmake],['README.txt','C++ / Qt 6 WebEngine wrapper generated by MakeCode Studio.\nInstall Qt 6 with WebEngineWidgets and a C++ build toolchain.\nConfigure CMake with your Qt 6 location, then build.\nThe original web files stay under site/.\nThis does NOT translate HTML/JavaScript source into native C++ logic.\n']]};}
+function csProject(){const code=`// MakeCode Studio v0.4 / C# WebView2 wrapper\n// Requires Windows, .NET 8, Microsoft.Web.WebView2 NuGet\nusing System;\nusing System.IO;\nusing System.Windows.Forms;\nusing Microsoft.Web.WebView2.WinForms;\n\nnamespace MakeCodeApp;\n\npublic class MainForm : Form\n{\n    public MainForm()\n    {\n        Text = "MakeCode App";\n        Width = 1280; Height = 800;\n        var view = new WebView2 { Dock = DockStyle.Fill };\n        Controls.Add(view);\n        Shown += async (_, _) =>\n        {\n            await view.EnsureCoreWebView2Async();\n            string index = Path.Combine(AppContext.BaseDirectory, "site", "index.html");\n            view.CoreWebView2.Navigate(new Uri(index).AbsoluteUri);\n        };\n    }\n}\n\nstatic class Program\n{\n    [STAThread]\n    static void Main()\n    {\n        ApplicationConfiguration.Initialize();\n        Application.Run(new MainForm());\n    }\n}\n`;
+const proj=`<Project Sdk="Microsoft.NET.Sdk">\n  <PropertyGroup>\n    <OutputType>WinExe</OutputType>\n    <TargetFramework>net8.0-windows</TargetFramework>\n    <UseWindowsForms>true</UseWindowsForms>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>enable</ImplicitUsings>\n  </PropertyGroup>\n  <ItemGroup>\n    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3537.50" />\n    <Content Include="site\\**\\*">\n      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>\n    </Content>\n  </ItemGroup>\n</Project>\n`;
+return {code,filename:'Program.cs',extra:[['Program.cs',code],['MakeCodeApp.csproj',proj],['README.txt','C# / Microsoft WebView2 wrapper generated by MakeCode Studio.\nWindows, .NET 8 SDK and WebView2 Runtime are required.\nRun: dotnet restore && dotnet run\nThe original HTML/CSS/JS files stay in site/.\nThis is NOT a line-by-line translation into C# logic.\n']]};}
+$('generate').addEventListener('click',()=>{if(!siteFiles.length)return;try{const lang=selection(),result=lang==='js'?jsProject():lang==='cpp'?cppProject():csProject();codeText=result.code;originalCode=result.code;codeFile=result.filename;packaged=[...result.extra.map(([name,txt])=>({name,bytes:enc.encode(txt)})),...(lang==='js'?result.assets.map(f=>({name:f.name,bytes:f.bytes})):siteFiles.map(f=>({name:'site/'+f.name,bytes:f.bytes})))];zipName=`MakeCode_${lang}_project.zip`;$('codeEditor').value=codeText;$('codeEditor').disabled=false;$('editStatus').textContent='生成しました。コードを直接編集できます。';$('editStatus').classList.remove('change-note');$('applyEdit').disabled=$('restoreEdit').disabled=false;$('runEdited').disabled=lang!=='js';clearEditedPreview();$('codeName').textContent=codeFile;$('downloadZip').disabled=$('downloadCode').disabled=$('copy').disabled=false;$('packageHelp').textContent=lang==='js'?'ZIP内の index.html・app.js・素材ファイルをまとめてGitHub Pagesにアップロードしてください。HTMLはDOM変換されたプログラムになり、iframeを使用しません。':lang==='cpp'?'C++版はQt6 WebEngine・CMakeが必要。ZIPにmain.cpp・CMakeLists.txt・site/が入ります。':'C#版はWindows・.NET 8・WebView2が必要。ZIPにProgram.cs・csproj・site/が入ります。';setStatus(`${targetNames[lang]}版のプログラムを生成しました。ZIPで保存できます。`)}catch(e){setStatus('生成エラー: '+e.message,true)}});
+function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000)}
+$('downloadCode').addEventListener('click',()=>{if(applyCodeEdits(false))download(new Blob([codeText],{type:'text/plain;charset=utf-8'}),codeFile)});
+$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('codeEditor').value);setStatus('コードをコピーしました。')}catch{setStatus('コピーできませんでした。コード欄から選択してコピーしてください。',true)}});
+// ZIP writer (store method, UTF-8 names). No external libraries needed.
+const table=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(bytes){let c=0xffffffff;for(const b of bytes)c=table[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0}
+function zip(files){let parts=[],centers=[],offset=0;const u16=(v)=>[v&255,v>>>8&255],u32=(v)=>[v&255,v>>>8&255,v>>>16&255,v>>>24&255];for(const f of files){const name=enc.encode(f.name),data=f.bytes;if(name.length>65535||data.length>0xffffffff)throw Error('ファイルが大きすぎます');const crc=crc32(data),len=data.length;const local=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(len),...u32(len),...u16(name.length),...u16(0),...name]);parts.push(local,data);const central=new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(len),...u32(len),...u16(name.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset),...name]);centers.push(central);offset+=local.length+len}const centerSize=centers.reduce((s,b)=>s+b.length,0);const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(centerSize),...u32(offset),...u16(0)]);return new Blob([...parts,...centers,end],{type:'application/zip'})}
+$('downloadZip').addEventListener('click',()=>{if(!applyCodeEdits(false))return;try{download(zip(packaged),zipName);setStatus('ZIPを書き出しました！')}catch(e){setStatus('ZIP出力エラー: '+e.message,true)}});
+clearEditedPreview();$('preview').srcdoc='<!doctype html><html><meta charset="utf-8"><body style="font:16px system-ui;color:#475569;text-align:center;padding:100px 15px">ここにアップロードしたサイトをプレビューします。</body></html>';
+})();
+</script></body></html>
